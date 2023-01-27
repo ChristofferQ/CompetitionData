@@ -1,3 +1,4 @@
+import java.time.LocalTime;
 import java.util.Random;
 
 public class Athlete {
@@ -7,14 +8,14 @@ public class Athlete {
         this.atheleteId = atheleteId;
     }
 
-    public int getAtheleteId() {
+    public int getAthleteId() {
         return atheleteId;
     }
 
     @Override
     public String toString() {
         return "Athlete{" +
-                "atheleteId=" + atheleteId +
+                "athleteId=" + atheleteId +
                 '}';
     }
 
@@ -24,7 +25,7 @@ public class Athlete {
         return roll;
     }
 
-    public Performance createPerformance(int performanceId, int boulderId, int athleteId) {
+    public Performance createPerformance(int performanceId, int boulderId, int athleteId, LocalTime startTime, LocalTime endTime) {
         int top = randomInt(0,1);
         int zone;
         int attemptTop = 0;
@@ -38,7 +39,7 @@ public class Athlete {
         if (zone == 1) {
             attemptZone = randomInt(1,10);
         }
-        Performance performance = new Performance(performanceId, boulderId, athleteId, top, zone, attemptTop, attemptZone,"","");
+        Performance performance = new Performance(performanceId, boulderId, athleteId, top, zone, attemptTop, attemptZone,startTime,endTime);
         return performance;
     }
 }
