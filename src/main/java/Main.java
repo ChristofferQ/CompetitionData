@@ -9,6 +9,7 @@ public class Main {
         List<Athlete> athletes = new ArrayList();
         List<Boulder> boulders = new ArrayList();
         List<Performance> performances = new ArrayList<>();
+        Performance performanceCreator = new Performance();
 
         //Creating athletes
         for (int i = 0; i < 81; i++) {
@@ -23,53 +24,55 @@ public class Main {
         }
 
         //Creating performances
-        int i = 0;
-        for (Boulder boulder: boulders) {
-            for (Athlete athlete: athletes) {
-                LocalTime time1 = LocalTime.of(0,0,0);
-                LocalTime time2 = LocalTime.of(6,0,0);
-                int secondOfDayTime1 = time1.toSecondOfDay();
-                int secondOfDayTime2 = time2.toSecondOfDay();
-                Random random = new Random();
-                int randomSecondOfDay = secondOfDayTime1 + random.nextInt(secondOfDayTime2-secondOfDayTime1);
-                LocalTime randomLocalStartTime = LocalTime.ofSecondOfDay(randomSecondOfDay);
-                LocalTime randomLocalEndTime = LocalTime.ofSecondOfDay(randomSecondOfDay + LocalTime.of(0, random.nextInt(6 - 2 + 1) + 2,0).toSecondOfDay());
-                Performance createdPerformance = athlete.createPerformance(i,athlete.getAthleteId(),boulder.getBoulderId(), randomLocalStartTime, randomLocalEndTime);
-                performances.add(createdPerformance);
-                i++;
-            }
-        }
+        performanceCreator.createPerformance(boulders, athletes, performances);
+
         //Sorting by endTime ascending
         Comparator<Performance> comparatorPerformance = (prod1, prod2) -> prod1.getEndTime().compareTo(prod2.getEndTime());
         Collections.sort(performances, comparatorPerformance);
         //performances.forEach(prod -> System.out.println(prod));
 
+        //Writing data to file
         File csvFile = new File("CompetitionData.csv");
         String[] entries = {"performanceId", "athleteId", "boulderId", "T", "Z", "aT", "aZ", "startTime", "endTime"};
         FileWriter fileWriter = new FileWriter(csvFile);
-        for (String str: entries
-             ) fileWriter.write((str) + ", "); {
-
+        StringJoiner j = new StringJoiner(", ").setEmptyValue("nothing");
+        for (String str : entries) {
+            j.add(str);
         }
+        fileWriter.write(String.valueOf(j));
         fileWriter.write("\n");
+        for (Performance performance : performances) {
+            try {
+                fileWriter.write(performance.toString());
+                fileWriter.write("\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        fileWriter.close();
 
-            for (Performance performance : performances) {
-                try {
-                    fileWriter.write(performance.toString());
-                    fileWriter.write("\n");
-                } catch (IOException e) {
-                    e.printStackTrace();
+        //System.out.println(performances);
+
+        //Make sure time doesn't overlap on the same boulder
+        //TODO: Finish and add it to createPerformance in athlete
+        for (Performance performance1: performances) {
+            for (Performance performance2: performances) {
+                if (performance1 == performance2) {
+                    continue;
+                }
+                LocalTime startTime1 = performance1.getStartTime();
+                LocalTime endTime1 = performance1.getEndTime();
+
+                LocalTime startTime2 = performance2.getStartTime();
+                LocalTime endTime2 = performance2.getEndTime();
+
+                int boulderId1 = performance1.getBoulderId();
+                int boulderId2 = performance2.getBoulderId();
+
+                if (boulderId1 == boulderId2) {
+                    System.out.println("Performance: " + performance1.getPerformanceId() + "\n" + "Same id: " + "\n" + boulderId1 + ": " + startTime1 + "\n" + boulderId1 + ": "  + startTime2);
                 }
             }
-            fileWriter.close();
-
-        /* Work in progress
-        //System.out.println(performances);
-        for (Performance performance: performances) {
-            LocalTime startTime = performance.getStartTime();
-            LocalTime endTime = performance.getEndTime();
-            System.out.println(performance.getBoulderId());
         }
-        */
     }
 }

@@ -25,7 +25,7 @@ public class Athlete {
         return roll;
     }
 
-    public Performance createPerformance(int performanceId, int boulderId, int athleteId, LocalTime startTime, LocalTime endTime) {
+    public Performance createPerformance(int performanceId, int boulderId, int athleteId, LocalTime startTime) {
         int top = randomInt(0,1);
         int zone;
         int attemptTop = 0;
@@ -39,7 +39,7 @@ public class Athlete {
         if (zone == 1) {
             attemptZone = randomInt(1,10);
         }
-        Performance performance = new Performance(performanceId, boulderId, athleteId, top, zone, attemptTop, attemptZone,startTime,endTime);
+        Performance performance = new Performance(performanceId, boulderId, athleteId, top, zone, attemptTop, attemptZone,startTime);
         return performance;
     }
 }
